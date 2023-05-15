@@ -4,7 +4,7 @@ class player:
     def __init__(self, pos, size, screen) -> None:
         self.screen = screen
         self.rect = pygame.rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load()
+        self.image = pygame.image.load('immagini/protagonista1.png')
         self.image = pygame.transform.scale(self.image, size)
         self.vel = [0,0]
         
