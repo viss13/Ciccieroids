@@ -1,59 +1,47 @@
-import pygame
+import pygame, math
 
-class player:
+class Player:
     def __init__(self, pos, size, screen) -> None:
         self.screen = screen
-        self.rect = pygame.rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load('immagini/protagonista1.png')
+        self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
+        self.image = pygame.image.load('immagini/protagonista2.png')
         self.image = pygame.transform.scale(self.image, size)
         self.vel = [0,0]
-        
-
-        self.moving_right = False
-        self.moving_left = False
-        self.moving_up = False
-        self.moving_down = False
-        self.vel_orizz = 5
-        self.vel_verti = 5
-        
-    def move_right(self):
-        self.moving_right = True
-    
-    def stop_moving_right(self):
-        self.moving_right = False
-
-    def move_left(self):
-        self.moving_left = True
-    
-    def stop_moving_left(self):
-        self.moving_left = False
-    
-    def move_up(self):
-        self.moving_up = True
-    
-    def stop_moving_up(self):
-        self.moving_up = False
-
-    def move_down(self):
-        self.moving_down = True
-    
-    def stop_moving_down(self):
-        self.moving_down = False
+        self.vel_orizz = 10
+        self.vel_verti = 10
     
     def muovi(self):
-        if self.moving_right:
-            self.rect.right += self.vel_orizz
-            if self.rect.right > self.screen.get_width():
-                self.rect.right = self.screen.get_width()
-        if self.moving_left:
-            self.rect.left -= self.vel_orizz
-            if self.rect.left < 0:
-                self.rect.left = 0
-        if self.moving_up:
-            self.rect.up += self.vel_verti
-            if self.rect.up > self.screen.get_width():
-                self.rect.up = self.screen.get_width()
-        if self.moving_down:
-            self.rect.down += self.vel_verti
-            if self.rect.down > self.screen.get_width():
-                self.rect.down = self.screen.get_width()
+        if math.sqrt(self.vel[0]**2 + self.vel[1]**2) > 1:
+            self.vel[0] /= math.sqrt(2)
+            self.vel[1] /= math.sqrt(2)
+
+        self.rect.left += self.vel[0] * self.vel_orizz
+        self.rect.top += self.vel[1] * self.vel_verti
+
+        if self.rect.right > self.screen.get_width():
+            self.rect.right = self.screen.get_width()
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.bottom > self.screen.get_height():
+            self.rect.bottom = self.screen.get_height()
+        if self.rect.top < 0:
+            self.rect.top = 0
+    
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
+
+class Asteroide:
+    def __init__(self, pos, size, dir, screen) -> None:
+        self.screen = screen
+        self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
+        self.image = pygame.image.load('immagini/cattivo.png')
+        self.image = pygame.transform.scale(self.image, size)
+        self.dir = dir
+        self.vel = dir * 10
+    
+    def muovi(self):
+        self.rect.left += self.vel[0]
+        self.rect.top += self.vel[1]
+
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
