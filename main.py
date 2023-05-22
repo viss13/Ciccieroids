@@ -3,7 +3,7 @@ from pygame.locals import *
 from objects import *
 
 # settaggi base finestra
-WINDOW_SIZE = (800, 600)
+WINDOW_SIZE = (900, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
 pygame.display.set_caption('Ciccieroids')
 
@@ -17,6 +17,9 @@ player = Player((100, 100), (100, 100), screen)
 asteroidi = []
 
 tick = 0
+spawn_tick = 0
+target = 1200
+sub = 1
 
 while True:
     
@@ -25,7 +28,9 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # 1 tasto sinistro, 2 tasto centrale, 3 tasto destro...
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+    
     # qui metterei le modifiche da fare ad ogni frame
     keys = pygame.key.get_pressed()
 
@@ -35,7 +40,7 @@ while True:
     player.muovi()
 
     # spawna asteroidi
-    if tick == 0:
+    if spawn_tick == 0:
         spawn_rand = random.randint(0, 3)
         rand_pos = [0, 0]
         rand_dir = [0, 0]
@@ -44,22 +49,22 @@ while True:
             rand_pos[0] = -player.rect.size[0]
             rand_pos[1] = random.randint(0, screen.get_height())
 
-            rand_dir[0] = 1
+            rand_dir[0] = 1*sub
         elif spawn_rand == 1:
             rand_pos[1] = -player.rect.size[1]
             rand_pos[0] = random.randint(0, screen.get_width())
 
-            rand_dir[1] = 1
+            rand_dir[1] = 1*sub
         elif spawn_rand == 2:
             rand_pos[0] = screen.get_width()
             rand_pos[1] = random.randint(0, screen.get_height())
 
-            rand_dir[0] = -1
+            rand_dir[0] = -1*sub
         elif spawn_rand == 3:
             rand_pos[1] = screen.get_height()
             rand_pos[0] = random.randint(0, screen.get_width())
 
-            rand_dir[1] = -1
+            rand_dir[1] = -1*sub
 
         ast = Asteroide(rand_pos, (100, 100), rand_dir, screen)
         asteroidi.append(ast)
@@ -72,75 +77,14 @@ while True:
         ast.draw()
         ast.muovi()
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     # qui aggiorno lo schermo con i disegni messi da fare
     pygame.display.update()
 
     # aspetto il prossmo frame
     clock.tick(fps)
     tick += 1
-    if tick > fps:
-        tick = 0
+    spawn_tick += 1
+    if spawn_tick > fps:
+        spawn_tick = 0
+    if tick % target == 0 and sub <= 5 and tick != 0:
+        sub += 1
