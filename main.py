@@ -5,7 +5,7 @@ from objects import *
 # settaggi base finestra
 WINDOW_SIZE = (800, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
-pygame.display.set_caption('Giochino')
+pygame.display.set_caption('Ciccieroids')
 
 # clock per temporizzare il programma
 clock = pygame.time.Clock()
@@ -29,8 +29,8 @@ while True:
     # qui metterei le modifiche da fare ad ogni frame
     keys = pygame.key.get_pressed()
 
-    player.vel[0] = 1 if keys[K_RIGHT] else -1 if keys[K_LEFT] else 0
-    player.vel[1] = 1 if keys[K_DOWN] else -1 if keys[K_UP] else 0
+    player.vel[0] = 1 if keys[K_d] else -1 if keys[K_a] else 0
+    player.vel[1] = 1 if keys[K_s] else -1 if keys[K_w] else 0
     
     player.muovi()
 
