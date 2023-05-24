@@ -13,7 +13,7 @@ fps = 60
 
 # ciclo fondamentale
 
-player = Player((100, 100), (100, 100), screen)
+player = Player((300, 300), (100, 100), screen)
 asteroidi = []
 
 tick = 0
@@ -28,16 +28,20 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1: # 1 tasto sinistro, 2 tasto centrale, 3 tasto destro...
-            mouse_x, mouse_y = pygame.mouse.get_pos()
     
     # qui metterei le modifiche da fare ad ogni frame
     keys = pygame.key.get_pressed()
 
-    player.vel[0] = 1 if keys[K_d] else -1 if keys[K_a] else 0
-    player.vel[1] = 1 if keys[K_s] else -1 if keys[K_w] else 0
+    if keys[K_d]:
+        player.angolo += player.vel_rot
+    elif keys[K_a]:
+        player.angolo -= player.vel_rot
     
-    player.muovi()
+    if keys[K_w]:
+        player.muovi()
+
+    # player.vel[0] = 1 if  else -1 if keys[K_a] else 0
+    # player.vel[1] = 1 if keys[K_s] else -1 if keys[K_w] else 0
 
     # spawna asteroidi
     if spawn_tick == 0:
@@ -66,8 +70,8 @@ while True:
 
             rand_dir[1] = -1*sub
 
-        ast = Asteroide(rand_pos, (100, 100), rand_dir, screen)
-        asteroidi.append(ast)
+        # ast = Asteroide(rand_pos, (100, 100), rand_dir, screen)
+        # asteroidi.append(ast)
 
     # qui ridisegnerei tutti gli elementi
     screen.fill((0,0,0,1))
