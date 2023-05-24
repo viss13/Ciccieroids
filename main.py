@@ -66,7 +66,7 @@ while True:
 
             rand_dir[1] = -1*sub
 
-        ast = Asteroide(rand_pos, (100, 100), rand_dir, screen)
+        ast = Asteroide(rand_pos, (75, 75), rand_dir, screen)
         asteroidi.append(ast)
 
     # qui ridisegnerei tutti gli elementi
