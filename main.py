@@ -1,6 +1,8 @@
-import pygame, sys, random
+import pygame, sys, random, os, time
 from pygame.locals import *
 from objects import *
+
+os.system("cls")
 
 # settaggi base finestra
 WINDOW_SIZE = (900, 600)
@@ -13,13 +15,13 @@ fps = 60
 
 # ciclo fondamentale
 
-player = Player((300, 300), (100, 100), screen)
+player = Player((300, 300), (40, 40), screen)
 asteroidi = []
+proiettili = []
 
-tick = 0
-spawn_tick = 0
-target = 1200
-sub = 1
+asteroid_spawn_rate = 2*fps
+
+shoot_key_pressed = False
 
 while True:
     
@@ -32,63 +34,71 @@ while True:
     # qui metterei le modifiche da fare ad ogni frame
     keys = pygame.key.get_pressed()
 
-    if keys[K_d]:
-        player.angolo += player.vel_rot
-    elif keys[K_a]:
-        player.angolo -= player.vel_rot
+    if keys[K_d] or keys[K_RIGHT]:
+        player.target_angolo += player.vel_rot
+    elif keys[K_a] or keys[K_LEFT]:
+        player.target_angolo -= player.vel_rot
     
-    if keys[K_w]:
-        player.muovi()
+    player.move = keys[K_w] or keys[K_UP]
+    player.muovi()
 
-    # player.vel[0] = 1 if  else -1 if keys[K_a] else 0
-    # player.vel[1] = 1 if keys[K_s] else -1 if keys[K_w] else 0
+    if keys[K_SPACE]:
+        if not shoot_key_pressed:
+            bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, screen)
+            bullet.vel_move += player.vel
+            proiettili.append(bullet)
+            shoot_key_pressed = True
+    elif shoot_key_pressed:
+        shoot_key_pressed = False
 
     # spawna asteroidi
-    if spawn_tick == 0:
+    if int(time.time()*100) % asteroid_spawn_rate == 0:
         spawn_rand = random.randint(0, 3)
         rand_pos = [0, 0]
-        rand_dir = [0, 0]
+        rand_angolo = 0.0
 
         if spawn_rand == 0:
-            rand_pos[0] = -player.rect.size[0]
+            rand_pos[0] = -60
             rand_pos[1] = random.randint(0, screen.get_height())
 
-            rand_dir[0] = 1*sub
+            rand_angolo = random.randint(-45, 45)
         elif spawn_rand == 1:
-            rand_pos[1] = -player.rect.size[1]
+            rand_pos[1] = -60
             rand_pos[0] = random.randint(0, screen.get_width())
 
-            rand_dir[1] = 1*sub
+            rand_angolo = random.randint(45, 135)
         elif spawn_rand == 2:
             rand_pos[0] = screen.get_width()
             rand_pos[1] = random.randint(0, screen.get_height())
 
-            rand_dir[0] = -1*sub
+            rand_angolo = random.randint(-135, 135)
         elif spawn_rand == 3:
             rand_pos[1] = screen.get_height()
             rand_pos[0] = random.randint(0, screen.get_width())
 
-            rand_dir[1] = -1*sub
+            rand_angolo = random.randint(-135, -45)
 
-        # ast = Asteroide(rand_pos, (100, 100), rand_dir, screen)
-        # asteroidi.append(ast)
+        ast = Asteroide(rand_pos, (60, 60), rand_angolo, screen)
+        asteroidi.append(ast)
 
     # qui ridisegnerei tutti gli elementi
     screen.fill((0,0,0,1))
     player.draw()
 
     for ast in asteroidi:
-        ast.draw()
         ast.muovi()
+        ast.draw()
+        for p in proiettili:
+            if ast.rect.colliderect(p.rect):
+                asteroidi.remove(ast)
+                proiettili.remove(p)
+    
+    for p in proiettili:
+        p.muovi()
+        p.draw()
     
     # qui aggiorno lo schermo con i disegni messi da fare
     pygame.display.update()
 
-    # aspetto il prossmo frame
+    # aspetto il prossimo frame
     clock.tick(fps)
-    tick += 1
-    spawn_tick += 1
-    if spawn_tick > fps:
-        spawn_tick = 0
-    if tick % target == 0 and sub <= 5 and tick != 0:
-        sub += 1
