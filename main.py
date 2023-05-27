@@ -85,17 +85,31 @@ while True:
     screen.fill((0,0,0,1))
     player.draw()
 
+    asteroidi_da_cancellare = []
+
     for ast in asteroidi:
         ast.muovi()
         ast.draw()
+
+        if ast.is_out():
+            asteroidi_da_cancellare.append(ast)
+
         for p in proiettili:
             if ast.rect.colliderect(p.rect):
-                asteroidi.remove(ast)
+                asteroidi_da_cancellare.append(ast)
                 proiettili.remove(p)
     
+    for ast in asteroidi_da_cancellare:
+        asteroidi.remove(ast)
+
     for p in proiettili:
         p.muovi()
         p.draw()
+    
+    pygame.font.init()
+    font = pygame.font.SysFont(pygame.font.get_default_font(),int(50), bold = True, italic = False)
+    img_txt = font.render("Ciao", True, (255, 255, 255))
+    screen.blit(img_txt, pygame.Rect(10,10,10,10))
     
     # qui aggiorno lo schermo con i disegni messi da fare
     pygame.display.update()

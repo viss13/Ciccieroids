@@ -69,10 +69,22 @@ class Asteroide:
         self.dir = (math.cos(self.angolo), math.sin(self.angolo))
         self.vel_move = 3.0
         self.vel = (self.dir[0] * self.vel_move, self.dir[1] * self.vel_move)
+        self.is_inside_screen = False
     
     def muovi(self):
         self.rect.left += self.vel[0]
         self.rect.top += self.vel[1]
+
+        self.is_inside_screen = True
+
+    def is_out(self) -> bool:
+        if (self.rect.right < 0 \
+        or self.rect.left > self.screen.get_width() \
+        or self.rect.bottom < 0 \
+        or self.rect.left > self.screen.get_height()) and self.is_inside_screen:
+            return True
+
+        return False
     
     def blit_rotate_center(self, screen, image, top_left, angle):
         rotated_image = pygame.transform.rotate(image, angle)
