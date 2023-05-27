@@ -1,12 +1,10 @@
 import pygame, math
 
-cartella_immagini = "immagini_gioco"
-
 class Player:
-    def __init__(self, pos, size, screen) -> None:
+    def __init__(self, pos, size, cartella, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella_immagini+'/player.png')
+        self.image = pygame.image.load(cartella+'/player.png')
         self.image = pygame.transform.scale(self.image, size)
         self.pos = [pos[0], pos[1]]
 
@@ -21,6 +19,10 @@ class Player:
         self.target_angolo = 0
 
         self.move = False
+
+        self.vite = 3
+
+        self.inv = False
     
     def muovi(self):
         if self.move:
@@ -51,23 +53,34 @@ class Player:
         if self.pos[1] > self.screen.get_height():
             self.pos[1] = -self.rect.size[1]
     
+    def damage(self) -> bool:
+        self.vite -= 1
+        self.inv = True
+        if self.vite == 0:
+            return True
+        return False
+    
     def blit_rotate_center(self, screen, image, top_left, angle):
         rotated_image = pygame.transform.rotate(image, angle)
         self.rect = rotated_image.get_rect(center=image.get_rect(topleft=top_left).center)
         screen.blit(rotated_image, self.rect.topleft)
     
     def draw(self):
+        if not self.inv:
+            self.image.set_alpha(255)
+        else:
+            self.image.set_alpha(80)
         self.blit_rotate_center(self.screen, self.image, self.pos, -self.target_angolo)
 
 class Asteroide:
-    def __init__(self, pos, size, angolo, screen) -> None:
+    def __init__(self, pos, size, angolo, sub, cartella, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella_immagini+'/rock.png')
+        self.image = pygame.image.load(cartella+'/rock.png')
         self.image = pygame.transform.scale(self.image, size)
         self.angolo = math.radians(angolo)
         self.dir = (math.cos(self.angolo), math.sin(self.angolo))
-        self.vel_move = 3.0
+        self.vel_move = 3.0 * sub
         self.vel = (self.dir[0] * self.vel_move, self.dir[1] * self.vel_move)
         self.is_inside_screen = False
     
@@ -78,11 +91,11 @@ class Asteroide:
         self.is_inside_screen = True
 
     def is_out(self) -> bool:
-        if (self.rect.right < 0 \
-        or self.rect.left > self.screen.get_width() \
-        or self.rect.bottom < 0 \
-        or self.rect.left > self.screen.get_height()) and self.is_inside_screen:
-            return True
+        # if (self.rect.right < 0 \
+        # or self.rect.left > self.screen.get_width() \
+        # or self.rect.bottom < 0 \
+        # or self.rect.left > self.screen.get_height()) and self.is_inside_screen:
+        #     return True
 
         return False
     
@@ -95,10 +108,10 @@ class Asteroide:
         self.blit_rotate_center(self.screen, self.image, self.rect.topleft, self.angolo)
 
 class Bullet:
-    def __init__(self, pos, size, angolo, screen) -> None:
+    def __init__(self, pos, size, angolo, cartella, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella_immagini+'/bullet.png')
+        self.image = pygame.image.load(cartella+'/bullet.png')
         self.image = pygame.transform.scale(self.image, size)
         self.angolo = angolo
         self.dir = (math.cos(math.radians(angolo)), math.sin(math.radians(angolo)))
