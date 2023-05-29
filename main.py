@@ -3,6 +3,7 @@ from pygame.locals import *
 from objects import *
 
 os.system("cls")
+pygame.mixer.init()
 
 # settaggi base finestra
 WINDOW_SIZE = (900, 600)
@@ -16,6 +17,7 @@ fps = 60
 # ciclo fondamentale
 
 in_game = False
+zen = False
 cartella_immagini = "immagini_gioco"
 
 player = Player((300, 300), (40, 40), cartella_immagini, screen)
@@ -72,6 +74,9 @@ while True:
 
         if keys[K_SPACE]:
             if not shoot_key_pressed:
+                if not zen:
+                    pygame.mixer.music.load("audio/fire.wav")
+                    pygame.mixer.music.play()
                 bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, cartella_immagini, screen)
                 bullet.vel_move += player.vel
                 proiettili.append(bullet)
@@ -129,7 +134,13 @@ while True:
             ast.draw()
 
             if ast.rect.colliderect(player.rect) and not player.inv:
+                if not zen:
+                    pygame.mixer.music.load("audio/saucerSmall.wav")
+                    pygame.mixer.music.play()
                 if player.damage():
+                    if not zen:
+                        pygame.mixer.music.load("audio/saucerBig.wav")
+                        pygame.mixer.music.play()
                     in_game = False
                 asteroidi_da_cancellare.append(ast)
 
@@ -138,6 +149,9 @@ while True:
 
             for p in proiettili:
                 if ast.rect.colliderect(p.rect):
+                    if not zen:
+                        pygame.mixer.music.load("audio/bangMedium.wav")
+                        pygame.mixer.music.play()
                     asteroidi_da_cancellare.append(ast)
                     proiettili.remove(p)
                     punteggio += 30
@@ -187,6 +201,9 @@ while True:
             cartella_immagini = "immagini_ciccio"
             player = Player((300, 300), (100, 100), cartella_immagini, screen)
             in_game = True
+            pygame.mixer.music.load("audio/musica.ogg")
+            pygame.mixer.music.play(-1)
+            zen = True
     
     # qui aggiorno lo schermo con i disegni messi da fare
     pygame.display.update()
