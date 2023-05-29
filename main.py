@@ -72,6 +72,8 @@ while True:
 
         if keys[K_SPACE]:
             if not shoot_key_pressed:
+                pygame.mixer.music.load("audio/fire.wav")
+                pygame.mixer.music.play()
                 bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, screen)
                 bullet.vel_move += player.vel
                 proiettili.append(bullet)
@@ -127,13 +129,19 @@ while True:
             ast.draw()
 
             if ast.rect.colliderect(player.rect) and not player.inv:
+                pygame.mixer.music.load("audio/saucerSmall.wav")
+                pygame.mixer.music.play()
                 if player.damage():
+                    pygame.mixer.music.load("audio/saucerBig.wav")
+                    pygame.mixer.music.play()
                     in_game = False
                 asteroidi_da_cancellare.append(ast)
 
             for p in proiettili:
                 if ast.rect.colliderect(p.rect):
                     if ast.rect.size > (60, 60):
+                        pygame.mixer.music.load("audio/bangMedium.wav")
+                        pygame.mixer.music.play()
                         asteroidi_da_cancellare.append(ast)
                         proiettili.remove(p)
                         punteggio += 30
@@ -141,6 +149,8 @@ while True:
                         asteroidi.append(Asteroide(ast.rect.center, (30, 30), random.randint(0,360), sub, screen))
                         asteroidi.append(Asteroide(ast.rect.center, (30, 30), random.randint(0,360), sub, screen))
                     else:
+                        pygame.mixer.music.load("audio/bangSmall.wav")
+                        pygame.mixer.music.play()
                         asteroidi_da_cancellare.append(ast)
                         proiettili.remove(p)
                         punteggio += 60
@@ -172,10 +182,7 @@ while True:
         img_txt = font.render(f"Premi Spazio per giocare", True, (255, 255, 255))
         screen.blit(img_txt, pygame.Rect(screen.get_width()/2 - img_txt.get_width()/2, screen.get_height()/2,10,10))
 
-        font2 = pygame.font.SysFont(pygame.font.get_default_font(),int(30), bold = False, italic = True)
-        img_txt2 = font2.render(f"Premi Invio per il gioco serio", True, (255, 255, 255))
-        screen.blit(img_txt2, pygame.Rect(screen.get_width()/2 - img_txt2.get_width()/2, screen.get_height()/2+40,10,10))
-
+    
         player.vite = 3
         player.pos = [300, 300]
         punteggio = 0
