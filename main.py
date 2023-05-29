@@ -8,7 +8,7 @@ pygame.mixer.init()
 # settaggi base finestra
 WINDOW_SIZE = (900, 600)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
-pygame.display.set_caption('Ciccieroids')
+pygame.display.set_caption('Asteroids')
 
 # clock per temporizzare il programma
 clock = pygame.time.Clock()
@@ -17,10 +17,8 @@ fps = 60
 # ciclo fondamentale
 
 in_game = False
-zen = False
-cartella_immagini = "immagini_gioco"
 
-player = Player((300, 300), (40, 40), cartella_immagini, screen)
+player = Player((300, 300), (40, 40), screen)
 asteroidi = []
 proiettili = []
 
@@ -74,10 +72,7 @@ while True:
 
         if keys[K_SPACE]:
             if not shoot_key_pressed:
-                if not zen:
-                    pygame.mixer.music.load("audio/fire.wav")
-                    pygame.mixer.music.play()
-                bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, cartella_immagini, screen)
+                bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, screen)
                 bullet.vel_move += player.vel
                 proiettili.append(bullet)
                 shoot_key_pressed = True
@@ -118,13 +113,11 @@ while True:
 
                 rand_angolo = random.randint(-135, -45)
 
-            ast = Asteroide(rand_pos, (60, 60), rand_angolo, sub, cartella_immagini, screen)
+            ast = Asteroide(rand_pos, (60, 60), rand_angolo, sub, screen)
             asteroidi.append(ast)
 
         # qui ridisegnerei tutti gli elementi
         screen.fill((0,0,0,1))
-        sfondo = pygame.transform.scale(pygame.image.load('Sfondo.png'), (900, 600))
-        screen.blit(sfondo, (900, 600))
         player.draw()
 
         asteroidi_da_cancellare = []
@@ -134,27 +127,23 @@ while True:
             ast.draw()
 
             if ast.rect.colliderect(player.rect) and not player.inv:
-                if not zen:
-                    pygame.mixer.music.load("audio/saucerSmall.wav")
-                    pygame.mixer.music.play()
                 if player.damage():
-                    if not zen:
-                        pygame.mixer.music.load("audio/saucerBig.wav")
-                        pygame.mixer.music.play()
                     in_game = False
-                asteroidi_da_cancellare.append(ast)
-
-            if ast.is_out():
                 asteroidi_da_cancellare.append(ast)
 
             for p in proiettili:
                 if ast.rect.colliderect(p.rect):
-                    if not zen:
-                        pygame.mixer.music.load("audio/bangMedium.wav")
-                        pygame.mixer.music.play()
-                    asteroidi_da_cancellare.append(ast)
-                    proiettili.remove(p)
-                    punteggio += 30
+                    if ast.rect.size > (60, 60):
+                        asteroidi_da_cancellare.append(ast)
+                        proiettili.remove(p)
+                        punteggio += 30
+
+                        asteroidi.append(Asteroide(ast.rect.center, (30, 30), random.randint(0,360), sub, screen))
+                        asteroidi.append(Asteroide(ast.rect.center, (30, 30), random.randint(0,360), sub, screen))
+                    else:
+                        asteroidi_da_cancellare.append(ast)
+                        proiettili.remove(p)
+                        punteggio += 60
         
         for ast in asteroidi_da_cancellare:
             asteroidi.remove(ast)
@@ -165,15 +154,14 @@ while True:
         
         for i in range(player.vite):
             cuore_rect = pygame.Rect(i*(40) + 25, 25, 40, 40)
-            cuore_image = pygame.image.load(cartella_immagini+'/player.png')
+            cuore_image = pygame.image.load('immagini_gioco/player.png')
             cuore_image = pygame.transform.scale(cuore_image, cuore_rect.size)
             screen.blit(cuore_image, cuore_rect)
         
         img_txt = font.render(f"Score: {punteggio}", True, (255, 255, 255))
         screen.blit(img_txt, pygame.Rect(screen.get_width()-img_txt.get_width()-10,10,10,10))
     else:
-        sfondo = pygame.transform.scale(pygame.image.load('Sfondo.png'), (900, 600))
-        screen.blit(sfondo, (900, 600))
+        screen.fill((0, 0, 0))
 
         with open("info.txt", 'r', encoding='utf-8') as f:
             record = int(f.readline())
@@ -197,16 +185,9 @@ while True:
         
         if keys[K_SPACE]:
             in_game = True
-        if keys[K_RETURN]:
-            cartella_immagini = "immagini_ciccio"
-            player = Player((300, 300), (100, 100), cartella_immagini, screen)
-            in_game = True
-            pygame.mixer.music.load("audio/musica.ogg")
-            pygame.mixer.music.play(-1)
-            zen = True
     
     # qui aggiorno lo schermo con i disegni messi da fare
-    pygame.display.update()
+    pygame.display.flip()
 
     # aspetto il prossimo frame
     clock.tick(fps)

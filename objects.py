@@ -1,10 +1,10 @@
 import pygame, math
 
 class Player:
-    def __init__(self, pos, size, cartella, screen) -> None:
+    def __init__(self, pos, size, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella+'/player.png')
+        self.image = pygame.image.load('immagini_gioco/player.png')
         self.image = pygame.transform.scale(self.image, size)
         self.pos = [pos[0], pos[1]]
 
@@ -73,10 +73,10 @@ class Player:
         self.blit_rotate_center(self.screen, self.image, self.pos, -self.target_angolo)
 
 class Asteroide:
-    def __init__(self, pos, size, angolo, sub, cartella, screen) -> None:
+    def __init__(self, pos, size, angolo, sub, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella+'/rock.png')
+        self.image = pygame.image.load('immagini_gioco/rock.png')
         self.image = pygame.transform.scale(self.image, size)
         self.angolo = math.radians(angolo)
         self.dir = (math.cos(self.angolo), math.sin(self.angolo))
@@ -89,15 +89,6 @@ class Asteroide:
         self.rect.top += self.vel[1]
 
         self.is_inside_screen = True
-
-    def is_out(self) -> bool:
-        # if (self.rect.right < 0 \
-        # or self.rect.left > self.screen.get_width() \
-        # or self.rect.bottom < 0 \
-        # or self.rect.left > self.screen.get_height()) and self.is_inside_screen:
-        #     return True
-
-        return False
     
     def blit_rotate_center(self, screen, image, top_left, angle):
         rotated_image = pygame.transform.rotate(image, angle)
@@ -108,10 +99,10 @@ class Asteroide:
         self.blit_rotate_center(self.screen, self.image, self.rect.topleft, self.angolo)
 
 class Bullet:
-    def __init__(self, pos, size, angolo, cartella, screen) -> None:
+    def __init__(self, pos, size, angolo, screen) -> None:
         self.screen = screen
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
-        self.image = pygame.image.load(cartella+'/bullet.png')
+        self.image = pygame.image.load('immagini_gioco/bullet.png')
         self.image = pygame.transform.scale(self.image, size)
         self.angolo = angolo
         self.dir = (math.cos(math.radians(angolo)), math.sin(math.radians(angolo)))
@@ -129,3 +120,15 @@ class Bullet:
     
     def draw(self):
         self.blit_rotate_center(self.screen, self.image, self.rect.topleft, self.angolo)
+
+class Cuore:
+    def __init__(self, pos, size, screen) -> None:
+        self.screen = screen
+        self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
+        self.image = pygame.image.load('immagini_gioco/cuore.png')
+        self.image = pygame.transform.scale(self.image, size)
+        self.visible = False
+
+    def draw(self):
+        if self.visible:
+            self.screen.blit(self.image, self.rect)
