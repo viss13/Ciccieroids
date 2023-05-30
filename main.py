@@ -18,7 +18,7 @@ fps = 60
 
 in_game = False
 
-player = Player((300, 300), (40, 40), screen)
+player = Player((300, 300), (73, 73), screen)
 asteroidi = []
 proiettili = []
 
@@ -29,6 +29,8 @@ shoot_key_pressed = False
 punteggio = 0
 
 timer = 0
+frame_timer = 0
+frame_rate = fps/15
 tempo_inizio = int(time.time()*100)
 sub = 1
 
@@ -76,6 +78,13 @@ while True:
             else:
                 player.inv = False
                 timer = 0
+        
+        if player.move:
+            if frame_timer < frame_rate:
+                frame_timer += 1
+            else:
+                player.frame = 0 if player.frame == 1 else 1
+                frame_timer = 0
 
         # spawna asteroidi
         if int(time.time()*100) % asteroid_spawn_rate == 0:
@@ -164,7 +173,7 @@ while True:
             p.draw()
         
         for i in range(player.vite):
-            cuore_rect = pygame.Rect(i*(40) + 25, 25, 40, 40)
+            cuore_rect = pygame.Rect(i*(40) + 25, 25, 73, 73)
             cuore_image = pygame.image.load('immagini_gioco/player.png')
             cuore_image = pygame.transform.scale(cuore_image, cuore_rect.size)
             screen.blit(cuore_image, cuore_rect)

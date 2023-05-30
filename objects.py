@@ -7,6 +7,8 @@ class Player:
         self.image = pygame.image.load('immagini_gioco/player.png')
         self.image = pygame.transform.scale(self.image, size)
         self.pos = [pos[0], pos[1]]
+        self.frame = 0
+        self.size = size
 
         self.vel = 0
         self.vel_max = 4
@@ -66,6 +68,14 @@ class Player:
         screen.blit(rotated_image, self.rect.topleft)
     
     def draw(self):
+        if self.move:
+            if self.frame == 0: self.image = pygame.image.load('immagini_gioco/player2.png')
+            elif self.frame == 1: self.image = pygame.image.load('immagini_gioco/player3.png')
+        else:
+            self.image = pygame.image.load('immagini_gioco/player.png')
+        
+        self.image = pygame.transform.scale(self.image, self.size)
+
         if not self.inv:
             self.image.set_alpha(255)
         else:
