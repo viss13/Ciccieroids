@@ -41,17 +41,6 @@ while True:
     for event in pygame.event.get():
         if event.type == QUIT:
             
-            record = 0
-            with open("info.txt", 'r', encoding='utf-8') as f:
-                record = int(f.readline())
-                f.close()
-            with open("info.txt", 'w', encoding='utf-8') as f:
-                if record < punteggio:
-                    f.write(f"{punteggio}")
-                else:
-                    f.write(f"{record}")
-                f.close()
-            
             pygame.quit()
             sys.exit()
     
@@ -74,7 +63,7 @@ while True:
             if not shoot_key_pressed:
                 pygame.mixer.music.load("audio/fire.wav")
                 pygame.mixer.music.play()
-                bullet = Bullet(player.rect.center, (15, 15), player.angolo-90, screen)
+                bullet = Bullet(player.rect.center, (15, 15), player.target_angolo-90, screen)
                 bullet.vel_move += player.vel
                 proiettili.append(bullet)
                 shoot_key_pressed = True
@@ -135,6 +124,18 @@ while True:
                     pygame.mixer.music.load("audio/saucerBig.wav")
                     pygame.mixer.music.play()
                     in_game = False
+            
+                    record = 0
+                    with open("record.txt", 'r', encoding='utf-8') as f:
+                        record = int(f.readline())
+                        f.close()
+                    with open("record.txt", 'w', encoding='utf-8') as f:
+                        if record < punteggio:
+                            f.write(f"{punteggio}")
+                        else:
+                            f.write(f"{record}")
+                        f.close()
+                    
                 asteroidi_da_cancellare.append(ast)
 
             for p in proiettili:
@@ -173,7 +174,7 @@ while True:
     else:
         screen.fill((0, 0, 0))
 
-        with open("info.txt", 'r', encoding='utf-8') as f:
+        with open("record.txt", 'r', encoding='utf-8') as f:
             record = int(f.readline())
             img_txt = font.render(f"Best Score: {record}", True, (255, 255, 255))
             screen.blit(img_txt, pygame.Rect(screen.get_width()-img_txt.get_width()-10,10,10,10))
